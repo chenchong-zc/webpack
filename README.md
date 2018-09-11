@@ -1,6 +1,6 @@
 # webpack
 学习webpack(版本 3.5.6)
-js文件module.exports = {}
+webpack.config.js文件module.exports = {}
 1.什么是webpack
 webpack => 模块打包机 => exports / module.exports
 它可以做什么事情呢,分析你的项目结构,.找到JavaScript模块以及其他一些浏览器不能直接运行的扩展语言
@@ -13,7 +13,7 @@ webpack => 模块打包机 => exports / module.exports
    npm i(install) -g webpack(版本号) 3.5.6
    局部安装 (推荐) npm i --save-dev webpack@(版本号) 3.5.6(--save-dev开发的模式去使用)
 4.用终端命令实现webpack打包(webpack模块) (入口) (出口)
-(1)node_modules/.bin/webpack app/main.js publicild_main.js  -- hash(散列函数)
+(1)node_modules/.bin/webpack app/main.js public/build_main.js  -- hash(散列函数)
  build_main.js 合并的js名
  写法:在HTML src引入build_main.js
 (2)用终端操作终归不好管理,那么webpack提供了一个配置文件,名字叫做webpack.config.js(规定)
@@ -49,6 +49,7 @@ webpack.config.js://唯一的入口文件   entry:__dirname + '文件路径',
   下载:npm i --save-dev webpack-dev-server@版本号  => 3.0版本 => webpack 4.0服务的
     npm i --save-dev webpack-dev-server@2.9.5  => 2.0版本 => webpack 3.0服务的
     不加版本号,下载的是最新版本
+   在package.json里面的script这个对象是一个自定义指令,加上"server": "webpack-dev-server --open",直接用npm run server
   写法:在webpack.config.js: //devServer 2.9.5 启动自带热更新
     //并且他会监测 所依赖的模块是否修改
     //我们update code => 状态触发 => 重新打包 => 触发刷新
@@ -77,7 +78,7 @@ webpack.config.js://唯一的入口文件   entry:__dirname + '文件路径',
                 //后面配置的是loader的名称
                 use:'babel-loader',
                 //include / exclude 必须处理的文件和需要并逼得文件
-                exclude:'de_modules'
+                exclude:'/node_modules'
             }
         ]
     }
@@ -145,3 +146,54 @@ webpack.config.js://唯一的入口文件   entry:__dirname + '文件路径',
                                       }
                                   })
     在自定义组件::src="big"
+(6)插件
+注意:插件需要用require引入,用的是webpack自带插件
+1.版权所有，翻版必究
+安装:cnpm install --save-dev html-webpack-plugin  
+引入:let webpack = require('webpack');
+写法:plugins:[
+ new webpack.BannerPlugin('版权所有，翻版必究')
+]
+2.HtmlWebpackPlugin:依据一个简单的index.html模板，生成一个自动引用你打包后的JS文件的新index.html。
+ 安装:npm install --save-dev html-webpack-plugin
+ 引入:const HtmlWebpackPlugin = require('html-webpack-plugin');
+ 写法:new HtmlWebpackPlugin({
+            template: __dirname + "文件路径"
+        })
+ 3.变化格式类型
+  安装:cnpm i --save-dev uglify-js-plugin
+  引入:let UglifyJsPlugin = require('uglify-js-plugin');
+  写法:new webpack.optimize.UglifyJsPlugin()
+4.去除build文件中的残余文件
+ 安装:cnpm install clean-webpack-plugin --save-dev
+ 引入:const CleanWebpackPlugin = require("clean-webpack-plugin");
+ 写法:new CleanWebpackPlugin('build/*.*', {
+            // 绝对路径
+            root: __dirname,
+            //将日志写入控制台。
+            verbose: true,
+            ////使用布尔“true”来测试/模拟删除。 （不会删除文件）。
+            //默认值：false - 删除文件
+            dry: false
+        })
+5.JS.css代码分离
+ 安装:cnpm install --save-dev extract-text-webpack-plugin
+ 引入:const ExtractTextPlugin = require('extract-text-webpack-plugin');
+ 写法:new ExtractTextPlugin("style.css")
+ 6.缓存:filename: "bundle-[hash].js"
+  在文件名最后加上[hash]散列函数
+"devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^1.0.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^2.0.0",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.23.0",
+    "uglify-js-plugin": "^0.0.6",
+    "url-loader": "^1.1.1",
+    "webpack": "^3.5.6"
+  }
